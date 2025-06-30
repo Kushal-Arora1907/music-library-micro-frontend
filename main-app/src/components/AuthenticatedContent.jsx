@@ -16,7 +16,8 @@ function AuthenticatedContent() {
 
       const script = document.createElement("script");
 
-      script.src = "http://localhost:4173/music-library-app.umd.js";
+      script.src =
+        "https://musiclibrarymfe.netlify.app/music-library-app.umd.js";
       script.async = true;
 
       script.onload = () => {
