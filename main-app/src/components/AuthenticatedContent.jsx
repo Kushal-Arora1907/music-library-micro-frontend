@@ -15,7 +15,7 @@ function AuthenticatedContent() {
       }
 
       const script = document.createElement("script");
-      // IMPORTANT: Ensure this URL is correct based on your `npm run preview` port (e.g., 4173)
+
       script.src = "http://localhost:4173/music-library-app.umd.js";
       script.async = true;
 

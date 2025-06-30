@@ -1,14 +1,14 @@
-// main-app/src/components/Header.jsx
-import { Info, LogOut, Music, Shield, User } from "lucide-react"; // Import Info icon
-import { useState } from "react"; // Import useState
+// C:\Users\Asus\OneDrive\Desktop\New folder\main-app\src\components/Header.jsx
+
+import { Info, LogOut, Music, Shield, User } from "lucide-react";
+// REMOVE useState import: import { useState } from "react";
+// REMOVE Modal import: import Modal from "./Modal";
 import { useAuth } from "../context/AuthContext";
 
-// Assuming Modal.jsx is created in the same components folder
-import Modal from "./Modal"; // Import the new Modal component
-
-const Header = () => {
+// Accept onOpenAbout prop
+const Header = ({ onOpenAbout }) => {
   const { user, logout } = useAuth();
-  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false); // State for modal visibility
+  // REMOVE state: const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   return (
     <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
@@ -42,9 +42,9 @@ const Header = () => {
               <span className="text-white/90">{user?.username}</span>
             </div>
 
-            {/* NEW: About Button */}
+            {/* "About" Button - now calls onOpenAbout prop */}
             <button
-              onClick={() => setIsAboutModalOpen(true)} // Open modal on click
+              onClick={onOpenAbout} // Use the prop here
               className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-200 rounded-lg transition-all duration-200 hover:shadow-lg">
               <Info className="w-4 h-4" />
               <span className="hidden sm:inline">About</span>
@@ -60,7 +60,8 @@ const Header = () => {
         </div>
       </div>
 
-      {/* NEW: Render the Modal here, controlled by isAboutModalOpen state */}
+      {/* REMOVE THE MODAL COMPONENT FROM HERE */}
+      {/*
       <Modal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
@@ -77,6 +78,7 @@ const Header = () => {
           Developed using React, Vite, and Tailwind CSS.
         </p>
       </Modal>
+      */}
     </header>
   );
 };
