@@ -1,14 +1,14 @@
-import { ExternalLink, LogOut, Music, Shield, User } from "lucide-react";
+// main-app/src/components/Header.jsx
+import { Info, LogOut, Music, Shield, User } from "lucide-react"; // Import Info icon
+import { useState } from "react"; // Import useState
 import { useAuth } from "../context/AuthContext";
+
+// Assuming Modal.jsx is created in the same components folder
+import Modal from "./Modal"; // Import the new Modal component
 
 const Header = () => {
   const { user, logout } = useAuth();
-
-  const openMusicLibrary = () => {
-    // In a real micro frontend setup, this would load the remote module
-    // For demo purposes, we'll open it in a new tab
-    window.open("http://localhost:5174", "_blank");
-  };
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false); // State for modal visibility
 
   return (
     <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
@@ -42,11 +42,12 @@ const Header = () => {
               <span className="text-white/90">{user?.username}</span>
             </div>
 
+            {/* NEW: About Button */}
             <button
-              onClick={openMusicLibrary}
-              className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-200 rounded-lg transition-all duration-200 hover:shadow-lg">
-              <ExternalLink className="w-4 h-4" />
-              <span className="hidden sm:inline">Open Music Library</span>
+              onClick={() => setIsAboutModalOpen(true)} // Open modal on click
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-200 rounded-lg transition-all duration-200 hover:shadow-lg">
+              <Info className="w-4 h-4" />
+              <span className="hidden sm:inline">About</span>
             </button>
 
             <button
@@ -58,6 +59,24 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* NEW: Render the Modal here, controlled by isAboutModalOpen state */}
+      <Modal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        title="About This Application">
+        <p>
+          This is a demonstration of a Music Library Micro Frontend
+          architecture.
+        </p>
+        <p>
+          The Main App handles authentication and loads the Music Library (a
+          separate app) dynamically.
+        </p>
+        <p className="text-white/60 text-sm mt-4">
+          Developed using React, Vite, and Tailwind CSS.
+        </p>
+      </Modal>
     </header>
   );
 };
