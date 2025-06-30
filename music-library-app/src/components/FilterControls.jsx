@@ -1,3 +1,5 @@
+// C:\Users\Asus\OneDrive\Desktop\New folder\music-library-app\src\components\FilterControls.jsx
+
 import { Filter, Group, Search, SortAsc, SortDesc } from "lucide-react";
 
 const FilterControls = ({
@@ -44,8 +46,10 @@ const FilterControls = ({
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters: REVERT TO ORIGINAL TAILWIND GRID CLASSES */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {" "}
+        {/* REVERTED CLASSNAME */}
         <div>
           <label className="block text-sm font-medium text-white/90 mb-2">
             Artist
@@ -64,7 +68,6 @@ const FilterControls = ({
             ))}
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-white/90 mb-2">
             Album
@@ -83,7 +86,6 @@ const FilterControls = ({
             ))}
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-white/90 mb-2">
             Genre
@@ -102,7 +104,6 @@ const FilterControls = ({
             ))}
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-white/90 mb-2">
             Year
@@ -126,9 +127,8 @@ const FilterControls = ({
         </div>
       </div>
 
-      {/* Sort and Group Controls */}
+      {/* Sort and Group Controls (remain unchanged) */}
       <div className="flex flex-wrap gap-4">
-        {/* Sort Controls */}
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-white/60" />
           <span className="text-sm text-white/90 font-medium">Sort by:</span>
@@ -152,7 +152,6 @@ const FilterControls = ({
           ))}
         </div>
 
-        {/* Group Controls */}
         <div className="flex items-center gap-2">
           <Group className="w-5 h-5 text-white/60" />
           <span className="text-sm text-white/90 font-medium">Group by:</span>

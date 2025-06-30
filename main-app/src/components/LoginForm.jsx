@@ -162,7 +162,7 @@ const LoginForm = () => {
         {/* Footer */}
         <div className="text-center mt-8 text-white/50 text-sm">
           <p>Main Application - Authentication Container</p>
-          <p>Micro Frontend Architecture Demo</p>
+          <p>Micro Frontend Architecture</p>
         </div>
       </div>
     </div>
