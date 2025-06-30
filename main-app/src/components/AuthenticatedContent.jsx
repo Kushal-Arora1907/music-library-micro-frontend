@@ -17,7 +17,7 @@ function AuthenticatedContent() {
       const script = document.createElement("script");
 
       script.src =
-        "https://musiclibrarymfe.netlify.app/music-library-app.umd.js";
+        "https://imaginative-mermaid-808092.netlify.app/music-library-app.umd.js";
       script.async = true;
 
       script.onload = () => {
