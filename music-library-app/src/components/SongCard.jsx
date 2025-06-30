@@ -1,10 +1,11 @@
-import { Calendar, Clock, Play, Trash } from "lucide-react";
+// C:\Users\Asus\OneDrive\Desktop\New folder\music-library-app\src\components\SongCard.jsx
+import { Calendar, Clock, Pause, Play, Trash } from "lucide-react"; // Import Pause icon
 
-const SongCard = ({ song, canDelete, onDelete }) => {
+// Accept onTogglePlay and isPlaying props
+const SongCard = ({ song, canDelete, onDelete, onTogglePlay, isPlaying }) => {
+  // Add new props
   return (
-    <div className="group bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 hover:scale-[1.02] relative">
-      {" "}
-      {/* Added 'relative' to make absolute positioning work */}
+    <div className="group bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 hover:scale-[1.02]">
       <div className="flex items-start gap-4">
         {/* Album Cover */}
         <div className="relative">
@@ -13,27 +14,38 @@ const SongCard = ({ song, canDelete, onDelete }) => {
             alt={`${song.album} cover`}
             className="w-16 h-16 rounded-lg object-cover shadow-lg"
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-            <Play className="w-6 h-6 text-white" />
-          </div>
+          {/* Play/Pause Button on hover */}
+          <button
+            onClick={() => onTogglePlay(song)} // Trigger playback on click
+            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center text-white"
+            title={isPlaying ? "Pause song" : "Play song"}>
+            {isPlaying ? (
+              <Pause className="w-6 h-6" /> // Show Pause icon if playing
+            ) : (
+              <Play className="w-6 h-6" /> // Show Play icon otherwise
+            )}
+          </button>
         </div>
 
         {/* Song Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex flex-col items-start">
-            {" "}
-            {/* Changed to flex-col for stacked info */}
-            <h3 className="font-semibold text-white text-lg truncate group-hover:text-purple-200 transition-colors w-full">
-              {" "}
-              {/* Added w-full */}
-              {song.title}
-            </h3>
-            <p className="text-white/70 truncate w-full">{song.artist}</p>{" "}
-            {/* Added w-full */}
-            <p className="text-white/50 text-sm truncate w-full">
-              {song.album}
-            </p>{" "}
-            {/* Added w-full */}
+          <div className="flex items-start justify-between">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-white text-lg truncate group-hover:text-purple-200 transition-colors">
+                {song.title}
+              </h3>
+              <p className="text-white/70 truncate">{song.artist}</p>
+              <p className="text-white/50 text-sm truncate">{song.album}</p>
+            </div>
+
+            {canDelete && (
+              <button
+                onClick={() => onDelete(song.id)}
+                className="opacity-0 group-hover:opacity-100 p-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-200 rounded-lg transition-all duration-200 hover:shadow-lg"
+                title="Delete song">
+                <Trash className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Song Details */}
@@ -52,14 +64,6 @@ const SongCard = ({ song, canDelete, onDelete }) => {
           </div>
         </div>
       </div>
-      {canDelete && (
-        <button
-          onClick={() => onDelete(song.id)}
-          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-200 rounded-lg transition-all duration-200 hover:shadow-lg z-10" // Added absolute positioning
-          title="Delete song">
-          <Trash className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 };

@@ -1,14 +1,20 @@
-import { Music2, Plus, Shield, User } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+// C:\Users\Asus\OneDrive\Desktop\New folder\music-library-app\src\App.jsx
+import { LogOut, Music2, Plus, Shield, User } from "lucide-react"; // Import Pause & Play icons
+import { useEffect, useMemo, useRef, useState } from "react"; // Import useRef
 import AddSongForm from "./components/AddSongForm";
 import FilterControls from "./components/FilterControls";
 import SongCard from "./components/SongCard";
 import { mockSongs } from "./data/mockData";
 
-function App() {
+function App({ logout, initialUser }) {
   const [songs, setSongs] = useState(mockSongs);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(initialUser || null);
+
+  // NEW STATE FOR PLAYBACK
+  const [playingSongId, setPlayingSongId] = useState(null); // ID of the currently playing song
+  const [isPlaying, setIsPlaying] = useState(false); // Whether audio is currently playing
+  const audioRef = useRef(null); // Ref to the <audio> element
 
   const [filters, setFilters] = useState({
     search: "",
@@ -27,17 +33,64 @@ function App() {
     groupBy: "none",
   });
 
-  // Get user data from localStorage (passed from main app)
+  // Get user data from localStorage ONLY if initialUser is not provided (for standalone mode)
   useEffect(() => {
-    const storedUser = localStorage.getItem("musicApp_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (!initialUser) {
+      const storedUser = localStorage.getItem("musicApp_user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } else {
+      setUser(initialUser);
     }
-  }, []);
+  }, [initialUser]);
+
+  // NEW: Playback effect for audio element listeners
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      // Event listeners for seamless playback control
+      const handleEnded = () => {
+        setIsPlaying(false);
+        setPlayingSongId(null);
+      };
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
+
+      audio.addEventListener("ended", handleEnded);
+      audio.addEventListener("play", handlePlay);
+      audio.addEventListener("pause", handlePause);
+
+      return () => {
+        audio.removeEventListener("ended", handleEnded);
+        audio.removeEventListener("play", handlePlay);
+        audio.removeEventListener("pause", handlePause);
+      };
+    }
+  }, []); // Run once on mount to set up listeners
+
+  // NEW: Toggle playback for a song
+  const handleSongToggle = (song) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playingSongId === song.id) {
+      // If currently playing song is clicked again
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+    } else {
+      // If a new song is clicked or no song is playing
+      audio.src = song.songUrl; // Set new song source
+      audio.play(); // Play the new song
+      setPlayingSongId(song.id);
+    }
+  };
 
   const canModify = user?.role === "admin";
 
-  // Get unique values for filter dropdowns using reduce
   const filterOptions = useMemo(() => {
     return songs.reduce(
       (acc, song) => {
@@ -56,7 +109,6 @@ function App() {
     );
   }, [songs]);
 
-  // Filter songs using filter method
   const filteredSongs = useMemo(() => {
     return songs.filter((song) => {
       const matchesSearch =
@@ -82,21 +134,24 @@ function App() {
     });
   }, [songs, filters]);
 
-  // Sort songs
   const sortedSongs = useMemo(() => {
     return [...filteredSongs].sort((a, b) => {
       const aValue = a[sort.field];
       const bValue = b[sort.field];
 
       let comparison = 0;
-      if (aValue < bValue) comparison = -1;
-      if (aValue > bValue) comparison = 1;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue);
+      } else if (aValue < bValue) {
+        comparison = -1;
+      } else if (aValue > bValue) {
+        comparison = 1;
+      }
 
       return sort.direction === "asc" ? comparison : -comparison;
     });
   }, [filteredSongs, sort]);
 
-  // Group songs using reduce
   const groupedSongs = useMemo(() => {
     if (group.groupBy === "none") {
       return { "All Songs": sortedSongs };
@@ -114,11 +169,17 @@ function App() {
     const song = {
       ...newSong,
       id: Date.now().toString(),
+      songUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-X.mp3", // Default URL for new songs
     };
     setSongs((prev) => [...prev, song]);
   };
 
   const handleDeleteSong = (id) => {
+    // If deleted song is currently playing, stop playback
+    if (playingSongId === id && audioRef.current) {
+      audioRef.current.pause();
+      setPlayingSongId(null);
+    }
     setSongs((prev) => prev.filter((song) => song.id !== id));
   };
 
@@ -127,7 +188,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      {/* Header */}
+      {/* Header (now UNCOMMENTED AND INCLUDES LOGOUT) */}
       <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -142,19 +203,30 @@ function App() {
             </div>
 
             {user && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg">
-                <div className="flex items-center gap-2">
-                  {user.role === "admin" ? (
-                    <Shield className="w-4 h-4 text-yellow-400" />
-                  ) : (
-                    <User className="w-4 h-4 text-blue-400" />
-                  )}
-                  <span className="text-white/90 font-medium capitalize">
-                    {user.role}
-                  </span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    {user.role === "admin" ? (
+                      <Shield className="w-4 h-4 text-yellow-400" />
+                    ) : (
+                      <User className="w-4 h-4 text-blue-400" />
+                    )}
+                    <span className="text-white/90 font-medium capitalize">
+                      {user.role}
+                    </span>
+                  </div>
+                  <span className="text-white/60">•</span>
+                  <span className="text-white/90">{user.username}</span>
                 </div>
-                <span className="text-white/60">•</span>
-                <span className="text-white/90">{user.username}</span>
+                {/* LOGOUT BUTTON HERE */}
+                {logout && (
+                  <button
+                    onClick={logout}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-200 rounded-lg transition-all duration-200 hover:shadow-lg">
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -232,7 +304,10 @@ function App() {
                         key={song.id}
                         song={song}
                         canDelete={canModify}
+                        // Pass playback props to SongCard
                         onDelete={handleDeleteSong}
+                        onTogglePlay={handleSongToggle} // NEW PROP
+                        isPlaying={playingSongId === song.id && isPlaying} // NEW PROP
                       />
                     ))}
                   </div>
@@ -250,6 +325,9 @@ function App() {
           )}
         </div>
       </main>
+
+      {/* NEW: Hidden Audio Element */}
+      <audio ref={audioRef} className="hidden"></audio>
     </div>
   );
 }
