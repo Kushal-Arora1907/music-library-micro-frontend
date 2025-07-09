@@ -254,6 +254,6 @@ Live Demo Links
 
 Once deployed, you can access the live application here:
 
-    Main App (Container): [YOUR_MAIN_APP_LIVE_URL_HERE]
+    Main App (Container): https://stellar-hamster-864582.netlify.app/
 
-    Music Library (Standalone): [YOUR_MUSIC_LIBRARY_LIVE_URL_HERE] (e.g., https://musiclibrarymfe.netlify.app/)
+    Music Library (Standalone): https://imaginative-mermaid-808092.netlify.app/
