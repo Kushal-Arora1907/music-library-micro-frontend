@@ -1,4 +1,4 @@
-Music Library Micro Frontend Application
+#Music Library Micro Frontend Application
 
 This project demonstrates a robust micro-frontend architecture for a music library application, split into a main authentication container and a dynamically loaded music library feature. It showcases modern React development, authentication with role management, efficient data manipulation, and seamless integration between independent frontends.
 Table of Contents
